@@ -388,6 +388,8 @@ Primeira implementação:
 
 Novas estratégias poderão ser adicionadas futuramente sem modificar o restante do sistema.
 
+Será necessário criar aqui uma interface para a estratégia de Playback: PlaybackStrategy.
+
 ---
 
 ## Repository
@@ -418,13 +420,13 @@ A escolha deverá ocorrer automaticamente durante a inicialização da aplicaç�
 
 ---
 
-## Singleton
+## Singleton (não disponível na primeira versão)
 
 Responsável pelo gerenciamento global das configurações da aplicação.
 
 Também será utilizado para disponibilizar acesso único às preferências do usuário.
 
-Na primeira versão armazenará apenas configurações simples.
+A primeira versão não irá armazenar configurações. Versões futuras poderão incluir configurações de volume e aparência do aplicativo (dark, light, etc..).
 
 ---
 
@@ -516,6 +518,8 @@ O projeto será guiado pelos seguintes princípios:
 A interface gráfica nunca deverá conter regra de negócio.
 
 Toda funcionalidade relevante deverá existir inicialmente no módulo Core e ser reutilizada pelas demais interfaces.
+
+
 
 
 
