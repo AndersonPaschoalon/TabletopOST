@@ -6,6 +6,7 @@ import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
 import br.org.tabletoprpg.soundtrack.service.playback.PlaybackService;
 import br.org.tabletoprpg.soundtrack.service.playback.PlaybackServiceImpl;
 import br.org.tabletoprpg.soundtrack.service.playback.RandomPlaybackStrategy;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public final class AppBootstrap {
 
@@ -34,6 +35,7 @@ public final class AppBootstrap {
                 new RandomPlaybackStrategy(),
                 ambiencePlayer);
 
+        SessionService sessionService = new SessionService( null, null, null, musicPlayback)
         /*
          * Dispatcher da aplicação.
          */
