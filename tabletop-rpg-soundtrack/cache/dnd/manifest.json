@@ -1,0 +1,59 @@
+{
+    "name": "dnd",
+    "themes": [
+        {
+            "name": "dungeon",
+            "songs": [
+                "dungeon/songs/file1.mp3",
+                "dungeon/songs/file2.mp3",
+                "dungeon/songs/file3.mp3"
+            ],
+            "ambience": [
+                "dungeon/ambience/file1.mp3",
+                "dungeon/ambience/file2.mp3",
+                "dungeon/ambience/file3.mp3"
+            ],
+            "images": [
+                "dungeon/images/file1.png",
+                "dungeon/images/file2.png",
+                "dungeon/images/file3.png"
+            ]
+        },
+        {
+            "name": "forest",
+            "songs": [
+                "forest/songs/file1.mp3",
+                "forest/songs/file2.mp3",
+                "forest/songs/file3.mp3"
+            ],
+            "ambience": [
+                "forest/ambience/file1.mp3",
+                "forest/ambience/file2.mp3",
+                "forest/ambience/file3.mp3"
+            ],
+            "images": [
+                "forest/images/file1.png",
+                "forest/images/file2.png",
+                "forest/images/file3.png"
+            ]
+        },
+        {
+            "name": "village",
+            "songs": [
+                "village/songs/file1.mp3",
+                "village/songs/file2.mp3",
+                "village/songs/file3.mp3"
+            ],
+            "ambience": [
+                "village/ambience/file1.mp3",
+                "village/ambience/file2.mp3",
+                "village/ambience/file3.mp3"
+            ],
+            "images": [
+                "village/images/file1.png",
+                "village/images/file2.png",
+                "village/images/file3.png"
+            ]
+        }
+    ]
+}
