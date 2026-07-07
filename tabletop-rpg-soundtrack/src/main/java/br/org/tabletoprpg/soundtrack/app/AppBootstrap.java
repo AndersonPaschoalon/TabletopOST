@@ -34,18 +34,22 @@ public final class AppBootstrap {
         PlaybackService ambiencePlayback = new PlaybackServiceImpl(
                 new RandomPlaybackStrategy(),
                 ambiencePlayer);
+        
+        /*
+        * Serviço de sessão da aplicação.
+        */
+        SessionService sessionService = new SessionService( null, null, null, musicPlayback);
 
-        SessionService sessionService = new SessionService( null, null, null, musicPlayback)
         /*
          * Dispatcher da aplicação.
          */
-
-        CommandDispatcher dispatcher = new CommandDispatcher();
+        CommandDispatcher dispatcher = new CommandDispatcher(sessionService, musicPlayback);
 
         return new ApplicationContext(
                 dispatcher,
                 musicPlayback,
                 ambiencePlayback,
-            );
+                sessionService
+        );
     }
 }

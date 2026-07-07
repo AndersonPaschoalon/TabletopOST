@@ -9,17 +9,10 @@ public class Main {
     public static void main(String[] args) {
 
         try (ApplicationContext context = AppBootstrap.create()) {
-
-            ConsoleView cli = new ConsoleView(
-                    context.getDispatcher());
-
+            ConsoleView cli = new ConsoleView(context.getDispatcher());
             cli.start();
-
         } catch (Exception ex) {
-
-            System.err.println(
-                    "Fatal error: " + ex.getMessage());
-
+            System.err.println("Fatal error: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
