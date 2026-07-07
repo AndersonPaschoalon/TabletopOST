@@ -38,7 +38,7 @@ public final class AppBootstrap {
         /*
         * Serviço de sessão da aplicação.
         */
-        SessionService sessionService = new SessionService( null, null, null, musicPlayback);
+        SessionService sessionService = new SessionService(null, null, musicPlayback);
 
         /*
          * Dispatcher da aplicação.
