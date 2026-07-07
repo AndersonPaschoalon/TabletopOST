@@ -1,6 +1,5 @@
 package br.org.tabletoprpg.soundtrack.service.session;
 
-import br.org.tabletoprpg.soundtrack.app.ApplicationContext;
 import br.org.tabletoprpg.soundtrack.model.Ost;
 import br.org.tabletoprpg.soundtrack.service.catalog.CatalogService;
 import br.org.tabletoprpg.soundtrack.service.loader.OstLoader;
@@ -8,19 +7,18 @@ import br.org.tabletoprpg.soundtrack.service.playback.PlaybackService;
 
 public class SessionService {
 
-    private final ApplicationContext context;
+    private String currentOst;
+    private String currentTheme;
 
     private final CatalogService catalogService;
     private final OstLoader loader;
     private final PlaybackService playbackService;
 
     public SessionService(
-            ApplicationContext context,
             CatalogService catalogService,
             OstLoader loader,
             PlaybackService playbackService) {
 
-        this.context = context;
         this.catalogService = catalogService;
         this.loader = loader;
         this.playbackService = playbackService;
@@ -42,11 +40,20 @@ public class SessionService {
 
         Ost ost = this.loader.load(localPath);
 
-        this.context.setCurrentOst(ost.name());
+        this.currentOst = ost.name();
 
-        this.context.setCurrentTheme(ost.themes().getFirst().name());
-
+        if (ost.themes() != null && !ost.themes().isEmpty()) {
+            this.currentTheme = ost.themes().getFirst().name();
+        }
         // this.playbackService.pauseBoth();
+    }
+
+    public String getCurrentOst() {
+        return currentOst;
+    }
+
+    public String getCurrentTheme() {
+        return currentTheme;
     }
 
 }

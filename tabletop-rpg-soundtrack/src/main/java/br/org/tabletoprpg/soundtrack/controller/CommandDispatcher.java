@@ -3,22 +3,23 @@ package br.org.tabletoprpg.soundtrack.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import br.org.tabletoprpg.soundtrack.app.ApplicationContext;
 import br.org.tabletoprpg.soundtrack.controller.command.SetOstHandler;
+import br.org.tabletoprpg.soundtrack.service.playback.PlaybackService;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class CommandDispatcher {
 
     private final Map<String, CommandHandler> handlers;
 
-    public CommandDispatcher(ApplicationContext context) {
-        this.handlers = createHandlers(context);
+    public CommandDispatcher(SessionService sessionService, PlaybackService musicPlayback) {
+        this.handlers = createHandlers(sessionService, musicPlayback);
     }
 
-    private Map<String, CommandHandler> createHandlers(ApplicationContext ctx) {
+    private Map<String, CommandHandler> createHandlers(SessionService sessionService, PlaybackService musicPlayback) {
 
         Map<String, CommandHandler> h = new HashMap<>();
 
-        h.put(SetOstHandler.COMMAND_NAME, new SetOstHandler(ctx.getSessionService()));
+        h.put(SetOstHandler.COMMAND_NAME, new SetOstHandler(sessionService));
         // h.put(UnsetOstHandler.COMMAND_NAME, new
         // UnsetOstHandler(ctx.getSessionService()));
 
