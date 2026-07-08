@@ -1,6 +1,6 @@
 # Tabletop RPG Soundtrack
 
-## Documento de Especificação Técnica (Versão 2.0)
+## Documento de Especificação Técnica (Versão 3.0)
 
 ---
 
@@ -90,7 +90,7 @@ O projeto será dividido em módulos independentes.
 
 ## Core
 
-Contém toda a regra de negócio. Não possui dependências de Android ou qualquer tipo de interface gráfica. 
+Contém toda a regra de negócio. Não possui dependências de Android ou qualquer tipo de interface gráfica.
 Este módulo representa o verdadeiro produto da aplicação.
 
 ---
@@ -131,6 +131,8 @@ Inicialmente será armazenada localmente.
 Futuramente poderá ser hospedada em um repositório GitHub.
 Cada OST possui diversos Themes.
 
+Cada OST é descrita por um arquivo manifest.json, que representa a fonte de verdade da estrutura do conteúdo. O manifesto descreve os Themes disponíveis e os recursos associados a cada um deles. O sistema não interpreta diretamente a estrutura física dos diretórios.
+
 ---
 
 ## Theme
@@ -148,9 +150,9 @@ Exemplos:
 
 Cada Theme contém:
 
-* playlist de músicas;
-* playlist de sons ambientes;
-* conjunto de imagens.
+* lista de caminhos para músicas;
+* lista de caminhos para sons ambientes;
+* lista de caminhos para imagens.
 
 Importante:
 O Theme **não representa o conteúdo atualmente sendo reproduzido**.
@@ -162,6 +164,7 @@ Ele representa apenas o tema atualmente selecionado pelo usuário para utilizaç
 
 Representa uma coleção de faixas de áudio.
 Existem dois tipos:
+
 * Music Playlist
 * Ambience Playlist
 Inicialmente a reprodução será realizada utilizando estratégia aleatória.
@@ -330,20 +333,46 @@ Global
 
 ---
 
-# 10. Repositório de Conteúdo
+## 10. Repositório de Conteúdo
 
-Todo acesso aos recursos será realizado através de uma abstração Repository.
+O acesso ao conteúdo será dividido em três responsabilidades independentes.
 
-A implementação inicial utilizará armazenamento local.
+### StorageService
 
-Posteriormente poderão existir implementações utilizando:
+Responsável por acessar a origem dos arquivos.
+
+A implementação inicial utilizará armazenamento local (`LocalStorage`).
+
+Implementações futuras poderão utilizar:
 
 * GitHub;
 * armazenamento em nuvem;
-* arquivos compactados;
+* servidores HTTP;
 * outras fontes.
 
-O restante da aplicação nunca deverá conhecer a origem dos arquivos.
+O restante da aplicação nunca conhecerá diretamente a origem do conteúdo.
+
+---
+
+### CatalogService
+
+Responsável por disponibilizar uma OST no armazenamento local da aplicação.
+
+Na primeira versão, utilizando apenas `LocalStorage`, sua responsabilidade será localizar e disponibilizar as OSTs existentes.
+
+Em versões futuras, o mesmo serviço será responsável por sincronizar conteúdos remotos para o cache local.
+
+---
+
+### OstLoader
+
+Responsável por transformar uma OST armazenada localmente em objetos do domínio.
+
+O `OstLoader` interpreta o `manifest.json`, valida sua estrutura e constrói os modelos `Ost` e `Theme` utilizados pelo restante da aplicação.
+
+---
+
+Essa seção, na minha opinião, ficou muito mais alinhada com a arquitetura.
 
 ---
 
@@ -357,7 +386,7 @@ Responsável pela separação entre:
 * View
 * Controller
 
-Toda regra de negócio permanecerá concentrada no Model.
+Toda regra de negócio permanecerá concentrada no módulo Core, distribuída entre Models e Services. O Model representa exclusivamente os dados do domínio, enquanto os Services implementam os comportamentos da aplicação.
 
 ---
 
@@ -372,9 +401,9 @@ Exemplos:
 * PlayAmbienceCommand
 * PauseBothCommand
 
-A CLI e o Android executarão exatamente os mesmos comandos.
+A CLI e o Android executarão exatamente os mesmos comandos. Mudará apenas a origem do evento.
 
-Mudará apenas a origem do evento.
+A interface de usuário é responsável apenas por converter ações do usuário em objetos `Command`. A execução desses comandos é realizada pelo `CommandDispatcher`, que delega cada operação a um `CommandHandler` especializado. Dessa forma, nenhuma interface conhece diretamente a lógica de negócio da aplicação.
 
 ---
 
@@ -388,24 +417,7 @@ Primeira implementação:
 
 Novas estratégias poderão ser adicionadas futuramente sem modificar o restante do sistema.
 
-Será necessário criar aqui uma interface para a estratégia de Playback: PlaybackStrategy.
-
----
-
-## Repository
-
-Todo acesso às OSTs será realizado através da interface ThemeRepository.
-
-Primeira implementação:
-
-* LocalStorageThemeRepository
-
-Implementações futuras:
-
-* GithubThemeRepository
-* CloudThemeRepository
-
----
+A estratégia de reprodução será abstraída através da interface `PlaybackStrategy`, permitindo adicionar novos algoritmos de seleção de faixas sem modificar o restante do sistema.
 
 ## Factory
 
@@ -487,7 +499,6 @@ A primeira versão deverá validar completamente:
 * Strategy Pattern;
 * Repository Pattern;
 * Factory Pattern;
-* Singleton;
 * armazenamento local;
 * execução via CLI.
 
@@ -514,13 +525,8 @@ O projeto será guiado pelos seguintes princípios:
 * Uso extensivo de interfaces para permitir múltiplas implementações.
 * Evolução incremental da aplicação.
 * Reutilização máxima do código entre diferentes plataformas.
+* Cada classe deve possuir uma única responsabilidade claramente definida (Single Responsibility Principle).
 
 A interface gráfica nunca deverá conter regra de negócio.
 
 Toda funcionalidade relevante deverá existir inicialmente no módulo Core e ser reutilizada pelas demais interfaces.
-
-
-
-
-
-
