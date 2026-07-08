@@ -36,7 +36,5 @@
 /home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/service/playback/PlaybackStrategy.java
 /home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/service/playback/RandomPlaybackStrategy.java
 /home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/service/session/SessionService.java
-/home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/service/storage/LocalStorageService.java
-/home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/service/storage/StorageService.java
 /home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/view/cli/CommandParser.java
 /home/anderson/Workspace/Unicamp/mc322/TabletopOST/tabletop-rpg-soundtrack/src/main/java/br/org/tabletoprpg/soundtrack/view/cli/ConsoleView.java
