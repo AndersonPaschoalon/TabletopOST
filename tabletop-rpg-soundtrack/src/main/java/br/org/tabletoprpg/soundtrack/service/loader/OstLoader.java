@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 
 import br.org.tabletoprpg.soundtrack.model.Ost;
-import br.org.tabletoprpg.soundtrack.model.Theme;
-
+import com.google.gson.Gson;
 /**
  * 
  * Transformar uma OST armazenada localmente em objetos do domínio (model).
  */
 public class OstLoader implements OstLoaderInterface {
+
+    private final Gson gson = new Gson();
+
 
     @Override
     public Ost load(String localPath) { //o SessionService exige localPath, não ostName
@@ -36,13 +37,9 @@ public class OstLoader implements OstLoaderInterface {
 
     }
 
-    //TODO: Fazer o parsing do json manifest da forma correta
     private Ost parseJsonToOst(String json) {
-
-        String ostName = null;
-        List<Theme> themes = null;
-
-        return new Ost(ostName, themes); //arrumar depois com o formato certo do objeto Ost
+     
+        return gson.fromJson(json, Ost.class);
     }
     
 
