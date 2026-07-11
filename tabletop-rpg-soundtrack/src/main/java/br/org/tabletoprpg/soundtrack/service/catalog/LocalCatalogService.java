@@ -69,8 +69,7 @@ public class LocalCatalogService implements CatalogService {
 
                     if (Files.isDirectory(source)) {
                         if (!Files.exists(destination)) {
-                            Files.createDirectory(destination);
-
+                            Files.createDirectories(destination);
                         }
 
                     } else {
