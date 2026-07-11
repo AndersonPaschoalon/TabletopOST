@@ -8,12 +8,16 @@ import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImageHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImagesHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.ListOstsHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.ListThemesHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.NextAmbienceHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.NextSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseBothHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlayAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlayBothHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlaySongHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.PreviousAmbienceHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.PreviousSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetOstHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetThemeHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.StatusHandler;
@@ -42,9 +46,13 @@ public class CommandDispatcher {
 
         h.put(PlaySongHandler.COMMAND_NAME, new PlaySongHandler(sessionService));
         h.put(PauseSongHandler.COMMAND_NAME, new PauseSongHandler(sessionService));
+        h.put(NextSongHandler.COMMAND_NAME, new NextSongHandler(sessionService));
+        h.put(PreviousSongHandler.COMMAND_NAME, new PreviousSongHandler(sessionService));
 
         h.put(PlayAmbienceHandler.COMMAND_NAME, new PlayAmbienceHandler(sessionService));
         h.put(PauseAmbienceHandler.COMMAND_NAME, new PauseAmbienceHandler(sessionService));
+        h.put(NextAmbienceHandler.COMMAND_NAME, new NextAmbienceHandler(sessionService));
+        h.put(PreviousAmbienceHandler.COMMAND_NAME, new PreviousAmbienceHandler(sessionService));
 
         h.put(PlayBothHandler.COMMAND_NAME, new PlayBothHandler(sessionService));
         h.put(PauseBothHandler.COMMAND_NAME, new PauseBothHandler(sessionService));
