@@ -62,6 +62,9 @@ public class SessionService {
      * @return
      */
     public List<String> getListOfThemes() {
+        if (this.ost == null) {
+            throw new ErrorLoadingOst("Nenhuma OST selecionada. Use SET_OST <nome>.");
+        }
         List<String> lthemes = this.ost.listThemes();
         return lthemes;
     }
@@ -100,6 +103,15 @@ public class SessionService {
         return this.playbackServiceAmbience.isPlaying();
     }
 
+    /**
+     * Retorna a lista de OSTs disponíveis no catálogo (local ou remoto).
+     *
+     * @return
+     */
+    public java.util.Collection<String> getListOfOsts() {
+        return this.catalogService.listAvailableOsts();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     /// Commands
     ///////////////////////////////////////////////////////////////////////////
@@ -110,6 +122,9 @@ public class SessionService {
      * @param themeName
      */
     public void setCurrentTheme(String themeName) {
+        if (this.ost == null) {
+            throw new ErrorLoadingOst("Nenhuma OST selecionada. Use SET_OST <nome>.");
+        }
         this.theme = this.ost.getThemeByName(themeName);
         this.currentTheme = themeName;
 
@@ -119,6 +134,9 @@ public class SessionService {
      * Desseleciona tema.
      */
     public void unsetTheme() {
+        if (this.ost == null) {
+            throw new ErrorLoadingOst("Nenhuma OST selecionada. Use SET_OST <nome>.");
+        }
         this.setCurrentTheme(ost.getFirstTheme().name());
     }
 
@@ -126,6 +144,9 @@ public class SessionService {
      * Começa a reproduzir musica.
      */
     public void playSong() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
         this.playbackServiceMusic.stop();
         this.playbackServiceMusic.setPlaylist(
                 List.copyOf(theme.songTracks()));
@@ -136,6 +157,9 @@ public class SessionService {
      * Começa a reproduzir musica ambiente.
      */
     public void playAmbience() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
         this.playbackServiceAmbience.stop();
         this.playbackServiceAmbience.setPlaylist(
                 List.copyOf(theme.ambienceTracks()));
@@ -182,21 +206,38 @@ public class SessionService {
      * 4) seleciona automaticamente o primeiro tema;
      * 5) interrompe qualquer reprodução em andamento.
      */
-    private void setCurrentOst(String ostName) {
+    public void setCurrentOst(String ostName) {
         this.pauseBoth();
 
+        // Nenhuma OST selecionada (ex: estado inicial da aplicação).
+        if (ostName == null) {
+            this.ost = null;
+            this.currentOst = null;
+            this.theme = null;
+            this.currentTheme = null;
+            return;
+        }
+
         // Faz o download da OST caso não exista localmente.
+        String localPath;
         try {
-            this.catalogService.downloadOst(ostName);
+            localPath = this.catalogService.downloadOst(ostName);
         } catch (Exception e) {
             throw new DownloadError("Erro ao baixar a OST: " + e.getMessage());
         }
 
         // seta estado e thema default
-        this.ost = this.loader.load(ostName);
+        this.ost = this.loader.load(localPath);
         this.currentOst = ostName;
 
         this.setCurrentTheme(ost.getFirstTheme().name());
+    }
+
+    /**
+     * Remove a OST atualmente selecionada, interrompendo qualquer reprodução.
+     */
+    public void unsetOst() {
+        this.setCurrentOst(null);
     }
 
 }

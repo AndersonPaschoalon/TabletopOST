@@ -1,0 +1,59 @@
+{
+    "name": "iron_kingdoms",
+    "themes": [
+        {
+            "name": "battlefield",
+            "songs": [
+                "battlefield/songs/file1.mp3",
+                "battlefield/songs/file2.mp3",
+                "battlefield/songs/file3.mp3"
+            ],
+            "ambience": [
+                "battlefield/ambience/file1.mp3",
+                "battlefield/ambience/file2.mp3",
+                "battlefield/ambience/file3.mp3"
+            ],
+            "images": [
+                "battlefield/images/file1.png",
+                "battlefield/images/file2.png",
+                "battlefield/images/file3.png"
+            ]
+        },
+        {
+            "name": "factory",
+            "songs": [
+                "factory/songs/file1.mp3",
+                "factory/songs/file2.mp3",
+                "factory/songs/file3.mp3"
+            ],
+            "ambience": [
+                "factory/ambience/file1.mp3",
+                "factory/ambience/file2.mp3",
+                "factory/ambience/file3.mp3"
+            ],
+            "images": [
+                "factory/images/file1.png",
+                "factory/images/file2.png",
+                "factory/images/file3.png"
+            ]
+        },
+        {
+            "name": "tavern",
+            "songs": [
+                "tavern/songs/file1.mp3",
+                "tavern/songs/file2.mp3",
+                "tavern/songs/file3.mp3"
+            ],
+            "ambience": [
+                "tavern/ambience/file1.mp3",
+                "tavern/ambience/file2.mp3",
+                "tavern/ambience/file3.mp3"
+            ],
+            "images": [
+                "tavern/images/file1.png",
+                "tavern/images/file2.png",
+                "tavern/images/file3.png"
+            ]
+        }
+    ]
+}
