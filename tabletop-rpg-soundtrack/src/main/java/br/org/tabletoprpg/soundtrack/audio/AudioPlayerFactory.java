@@ -21,10 +21,13 @@ public final class AudioPlayerFactory {
         if(Debug){
             return new DummyAudioPlayer();
         }
-
-        
-        
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return new WindowsAudioPlayer();
+        } else {
             return new LinuxAudioPlayer();
+        } 
+        
+            
         
 
 
