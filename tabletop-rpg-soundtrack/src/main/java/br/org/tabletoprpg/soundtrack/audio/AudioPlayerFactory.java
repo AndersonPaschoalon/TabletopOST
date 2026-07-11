@@ -1,5 +1,6 @@
 package br.org.tabletoprpg.soundtrack.audio;
 
+
 /**
  * Factory responsável por selecionar automaticamente
  * a implementação de AudioPlayer compatível com
@@ -16,9 +17,16 @@ public final class AudioPlayerFactory {
     /**
      * Cria um AudioPlayer compatível com a plataforma atual.
      */
-    public static AudioPlayer create() {
+    public static AudioPlayer create(boolean Debug) {
+        if(Debug){
+            return new DummyAudioPlayer();
+        }
 
-        return new DummyAudioPlayer();
+        
+        
+            return new LinuxAudioPlayer();
+        
+
 
     }
 
