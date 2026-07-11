@@ -1,5 +1,7 @@
 package br.org.tabletoprpg.soundtrack.audio;
 
+import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
+
 /**
  * Implementação fictícia de um player de áudio.
  *
@@ -77,7 +79,7 @@ public class DummyAudioPlayer implements AudioPlayer {
 
         while (playing) {
 
-            System.out.println(
+            ConsolePrompt.println(
                     "[DummyAudioPlayer] Playing: " + currentFile);
 
             try {
@@ -93,7 +95,7 @@ public class DummyAudioPlayer implements AudioPlayer {
             }
         }
 
-        System.out.println(
+        ConsolePrompt.println(
                 "[DummyAudioPlayer] Playback finished.");
     }
 

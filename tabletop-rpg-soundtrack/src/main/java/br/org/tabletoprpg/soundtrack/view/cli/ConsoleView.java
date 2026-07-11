@@ -1,34 +1,37 @@
 package br.org.tabletoprpg.soundtrack.view.cli;
 
-import java.util.Scanner;
-
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class ConsoleView {
 
-    private final Scanner scanner;
     private final CommandDispatcher dispatcher;
+    private final SessionService sessionService;
+    private final ConsolePrompt prompt;
 
-    public ConsoleView(CommandDispatcher dispatcher) {
-
+    public ConsoleView(CommandDispatcher dispatcher, SessionService sessionService) {
         this.dispatcher = dispatcher;
-        this.scanner = new Scanner(System.in);
+        this.sessionService = sessionService;
+        this.prompt = new ConsolePrompt();
     }
 
     public void start() {
-
-        System.out.println("=== Tabletop RPG Soundtrack ===");
-        System.out.println("Digite HELP para ajuda.");
-        System.out.println();
-
+        prompt.printWelcome();
         while (true) {
-
-            System.out.print("> ");
-
-            String line = scanner.nextLine().trim();
+            String line = prompt.readString(buildPromptText());
 
             if (line.isBlank()) {
+                continue;
+            }
+
+            if (line.equalsIgnoreCase("help")) {
+                prompt.printHelp();
+                continue;
+            }
+
+            if (line.equalsIgnoreCase("clear")) {
+                prompt.clearScreen();
                 continue;
             }
 
@@ -37,17 +40,34 @@ public class ConsoleView {
             }
 
             try {
-
                 Command command = CommandParser.parse(line);
+                String message = dispatcher.dispatch(command);
 
-                dispatcher.dispatch(command);
-
+                if (message != null) {
+                    prompt.printSuccess(message);
+                }
             } catch (Exception ex) {
-
-                System.out.println("Erro: " + ex.getMessage());
+                prompt.printError(ex.getMessage());
             }
         }
 
-        scanner.close();
+        prompt.close();
+    }
+
+    /**
+     * Monta o prompt exibindo a OST e o tema atualmente selecionados,
+     * para que o usuário nunca perca a referência de onde está.
+     *
+     * Ex: "[dnd/forest]> " ou "[nenhuma OST]> "
+     */
+    private String buildPromptText() {
+        String ost = sessionService.getCurrentOstName();
+
+        if (ost == null) {
+            return "[sem OST]> ";
+        }
+
+        String theme = sessionService.getCurrentThemeName();
+        return "[" + ost + "/" + theme + "]> ";
     }
 }

@@ -1,0 +1,59 @@
+{
+    "name": "lovecraft",
+    "themes": [
+        {
+            "name": "asylum",
+            "songs": [
+                "asylum/songs/file1.mp3",
+                "asylum/songs/file2.mp3",
+                "asylum/songs/file3.mp3"
+            ],
+            "ambience": [
+                "asylum/ambience/file1.mp3",
+                "asylum/ambience/file2.mp3",
+                "asylum/ambience/file3.mp3"
+            ],
+            "images": [
+                "asylum/images/file1.png",
+                "asylum/images/file2.png",
+                "asylum/images/file3.png"
+            ]
+        },
+        {
+            "name": "cemetery",
+            "songs": [
+                "cemetery/songs/file1.mp3",
+                "cemetery/songs/file2.mp3",
+                "cemetery/songs/file3.mp3"
+            ],
+            "ambience": [
+                "cemetery/ambience/file1.mp3",
+                "cemetery/ambience/file2.mp3",
+                "cemetery/ambience/file3.mp3"
+            ],
+            "images": [
+                "cemetery/images/file1.png",
+                "cemetery/images/file2.png",
+                "cemetery/images/file3.png"
+            ]
+        },
+        {
+            "name": "ritual",
+            "songs": [
+                "ritual/songs/file1.mp3",
+                "ritual/songs/file2.mp3",
+                "ritual/songs/file3.mp3"
+            ],
+            "ambience": [
+                "ritual/ambience/file1.mp3",
+                "ritual/ambience/file2.mp3",
+                "ritual/ambience/file3.mp3"
+            ],
+            "images": [
+                "ritual/images/file1.png",
+                "ritual/images/file2.png",
+                "ritual/images/file3.png"
+            ]
+        }
+    ]
+}

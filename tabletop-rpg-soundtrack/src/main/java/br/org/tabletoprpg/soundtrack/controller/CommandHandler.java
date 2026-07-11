@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public interface CommandHandler {
 
-    void handle(Command command);
+    String handle(Command command);
 
     default void requireParamCount(
             String[] params,

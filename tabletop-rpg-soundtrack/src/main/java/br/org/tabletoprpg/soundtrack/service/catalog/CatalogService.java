@@ -1,7 +1,6 @@
 package br.org.tabletoprpg.soundtrack.service.catalog;
 
 import java.util.Collection;
-import java.util.List;
 
 import br.org.tabletoprpg.soundtrack.exception.OstNotFoundError;
 import br.org.tabletoprpg.soundtrack.exception.ConnectionError;
