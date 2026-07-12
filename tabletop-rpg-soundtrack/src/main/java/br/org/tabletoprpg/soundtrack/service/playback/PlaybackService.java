@@ -66,6 +66,24 @@ public interface PlaybackService {
     void stop();
 
     /**
+     * Interrompe a faixa atual e avança imediatamente para a próxima
+     * faixa da playlist, segundo a {@link PlaybackStrategy} configurada.
+     * <p>
+     * Não tem efeito caso não exista reprodução em andamento.
+     * </p>
+     */
+    void next();
+
+    /**
+     * Interrompe a faixa atual e volta imediatamente para a faixa
+     * anterior da playlist, segundo a {@link PlaybackStrategy} configurada.
+     * <p>
+     * Não tem efeito caso não exista reprodução em andamento.
+     * </p>
+     */
+    void previous();
+
+    /**
      * Informa se existe uma reprodução em andamento.
      *
      * @return true caso exista reprodução ativa; false caso contrário.

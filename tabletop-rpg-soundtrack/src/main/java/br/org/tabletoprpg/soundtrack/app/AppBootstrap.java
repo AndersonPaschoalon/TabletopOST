@@ -6,9 +6,9 @@ import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
 import br.org.tabletoprpg.soundtrack.service.catalog.CatalogService;
 import br.org.tabletoprpg.soundtrack.service.catalog.LocalCatalogService;
 import br.org.tabletoprpg.soundtrack.service.loader.OstLoader;
+import br.org.tabletoprpg.soundtrack.service.playback.LinearPlaybackStrategy;
 import br.org.tabletoprpg.soundtrack.service.playback.PlaybackService;
 import br.org.tabletoprpg.soundtrack.service.playback.PlaybackServiceImpl;
-import br.org.tabletoprpg.soundtrack.service.playback.RandomPlaybackStrategy;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public final class AppBootstrap {
@@ -31,11 +31,11 @@ public final class AppBootstrap {
          */
 
         PlaybackService musicPlayback = new PlaybackServiceImpl(
-                new RandomPlaybackStrategy(),
+                new LinearPlaybackStrategy(),
                 musicPlayer);
 
         PlaybackService ambiencePlayback = new PlaybackServiceImpl(
-                new RandomPlaybackStrategy(),
+                new LinearPlaybackStrategy(),
                 ambiencePlayer);
 
         /*

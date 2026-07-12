@@ -43,6 +43,13 @@ public class PlaybackServiceImpl implements PlaybackService {
      */
     private volatile boolean playing;
 
+    /**
+     * Quando true, a próxima faixa buscada pelo loop será a "anterior"
+     * (via {@link PlaybackStrategy#previousTrack(List)}) em vez da
+     * "próxima" padrão. É consumida (volta a false) assim que usada.
+     */
+    private volatile boolean previousRequested;
+
     @Override
     public synchronized void setPlaylist(List<String> playlist) {
 
@@ -88,11 +95,18 @@ public class PlaybackServiceImpl implements PlaybackService {
 
         while (playing) {
 
-            // Escolhe a próxima música.
-            String nextTrack = strategy.nextTrack(playlist);
+            // Escolhe a próxima (ou anterior, se solicitado) música.
+            String track;
+
+            if (previousRequested) {
+                previousRequested = false;
+                track = strategy.previousTrack(playlist);
+            } else {
+                track = strategy.nextTrack(playlist);
+            }
 
             // Solicita ao player que reproduza a faixa.
-            audioPlayer.play(nextTrack);
+            audioPlayer.play(track);
 
             // Aguarda o término da reprodução.
             while (playing && audioPlayer.isPlaying()) {
@@ -128,6 +142,33 @@ public class PlaybackServiceImpl implements PlaybackService {
 
             playbackThread = null;
         }
+    }
+
+    @Override
+    public synchronized void next() {
+
+        if (!playing) {
+            return;
+        }
+
+        previousRequested = false;
+
+        // Apenas interrompe a faixa atual (sem parar a thread do loop);
+        // o loop, ao perceber que o audioPlayer não está mais tocando,
+        // buscará a próxima faixa naturalmente.
+        audioPlayer.stop();
+    }
+
+    @Override
+    public synchronized void previous() {
+
+        if (!playing) {
+            return;
+        }
+
+        previousRequested = true;
+
+        audioPlayer.stop();
     }
 
     @Override

@@ -22,3 +22,86 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# =========================================================================
+# Maven Build Output
+# =========================================================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Keep Maven Wrapper JAR if you use it, but ignore temporary wrapper files
+# Comment out the line below if you prefer to commit the maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================================================================
+# Java Compiled Files
+# =========================================================================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# =========================================================================
+# IDE Specific Files
+# =========================================================================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.baseline/
+.che/
+.project
+.classpath
+.settings/
+.factorypath
+
+# Visual Studio Code
+.vscode/
+
+# NetBeans
+**/nbproject/private/
+**/nbproject/eclipse-fragement.xml
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# =========================================================================
+# Operating System / Miscellaneous
+# =========================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Ehthumbs.db
+Desktop.ini
+
+# Log files
+*.log
+logs/
+
+# Crash dumps
+drwtsn32.log
+ntuser.dat
+glob2seq.log
+
+# Secrets & Environment Variables (Crucial for Spring Boot / Web Apps)
+.env

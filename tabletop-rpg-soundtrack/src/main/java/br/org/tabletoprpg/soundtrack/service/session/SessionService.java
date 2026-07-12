@@ -167,6 +167,46 @@ public class SessionService {
     }
 
     /**
+     * Avança para a próxima música da playlist atual.
+     */
+    public void nextSong() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
+        this.playbackServiceMusic.next();
+    }
+
+    /**
+     * Volta para a música anterior da playlist atual.
+     */
+    public void previousSong() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
+        this.playbackServiceMusic.previous();
+    }
+
+    /**
+     * Avança para o próximo som ambiente da playlist atual.
+     */
+    public void nextAmbience() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
+        this.playbackServiceAmbience.next();
+    }
+
+    /**
+     * Volta para o som ambiente anterior da playlist atual.
+     */
+    public void previousAmbience() {
+        if (this.theme == null) {
+            throw new ErrorLoadingOst("Nenhum tema selecionado. Use SET_OST/SET_THEME primeiro.");
+        }
+        this.playbackServiceAmbience.previous();
+    }
+
+    /**
      * Pausa música.
      */
     public void pauseSong() {
