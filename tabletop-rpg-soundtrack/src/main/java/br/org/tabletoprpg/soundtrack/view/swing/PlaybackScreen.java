@@ -77,10 +77,10 @@ public class PlaybackScreen extends JPanel {
 
         JButton changeOstButton = new JButton("↩ Trocar OST");
         changeOstButton.setToolTipText("Volta para a tela de seleção de OST");
-        changeOstButton.addActionListener(e -> {
+        changeOstButton.addActionListener(e -> SwingErrorHandler.run(this, () -> {
             dispatcher.dispatch(new Command("UNSET_OST"));
             onChange.run();
-        });
+        }));
 
         JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         eastPanel.add(themeLabel);
@@ -183,11 +183,19 @@ public class PlaybackScreen extends JPanel {
      */
     private void toggleGlobalPlayback() {
 
-        globalPlaying = !globalPlaying;
+        boolean nextState = !globalPlaying;
 
-        String command = globalPlaying ? "PLAY_BOTH" : "PAUSE_BOTH";
+        String command = nextState ? "PLAY_BOTH" : "PAUSE_BOTH";
 
-        dispatcher.dispatch(new Command(command));
+        try {
+            dispatcher.dispatch(new Command(command));
+        } catch (br.org.tabletoprpg.soundtrack.exception.TabletopExeption ex) {
+            SwingErrorHandler.showError(this, ex.getMessage());
+            return;
+        }
+
+        // Só atualiza o estado visual se o comando não tiver falhado.
+        globalPlaying = nextState;
 
         onChange.run();
     }
@@ -200,10 +208,10 @@ public class PlaybackScreen extends JPanel {
 
         JButton button = new JButton(label);
 
-        button.addActionListener(e -> {
+        button.addActionListener(e -> SwingErrorHandler.run(this, () -> {
             dispatcher.dispatch(new Command(commandName));
             onChange.run();
-        });
+        }));
 
         return button;
     }

@@ -122,11 +122,7 @@ public class LocalCatalogService implements CatalogService {
             return rootPath;
 
         } catch (Exception e) {
-           throw new TabletopExeption("Path local nao encontrado");
+           throw new TabletopExeption("Servidor local nao encontrado");
         }
-
-        
-
     }
-
 }
