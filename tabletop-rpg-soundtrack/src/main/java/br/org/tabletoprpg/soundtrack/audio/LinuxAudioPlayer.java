@@ -1,15 +1,26 @@
 package br.org.tabletoprpg.soundtrack.audio;
 
+
 import java.io.IOException;
+
+
 
 public class LinuxAudioPlayer implements AudioPlayer {
 
+
     private volatile Process process;
 
-    @Override
-    public void play(String file) {
 
-        stop();
+    public LinuxAudioPlayer(){
+        this.process = null;
+
+
+    }
+
+    @Override
+    public void play(String fileDir) {
+
+        this.stop();
 
         try {
 
@@ -30,6 +41,9 @@ public class LinuxAudioPlayer implements AudioPlayer {
 
             this.process = null;
 
+            
+
+
         } catch (IOException e) {
 
             throw new RuntimeException(
@@ -44,6 +58,10 @@ public class LinuxAudioPlayer implements AudioPlayer {
 
             Thread.currentThread().interrupt();
         }
+        
+        
+
+
     }
 
     @Override
@@ -55,11 +73,18 @@ public class LinuxAudioPlayer implements AudioPlayer {
 
             this.process = null;
         }
+
+        
+
+
     }
 
     @Override
     public boolean isPlaying() {
 
         return this.process != null && this.process.isAlive();
+
+        
+
     }
 }

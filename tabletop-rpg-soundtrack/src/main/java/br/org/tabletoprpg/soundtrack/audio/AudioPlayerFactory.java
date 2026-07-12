@@ -1,5 +1,6 @@
 package br.org.tabletoprpg.soundtrack.audio;
 
+
 /**
  * Factory responsável por selecionar automaticamente
  * a implementação de AudioPlayer compatível com
@@ -17,17 +18,17 @@ public final class AudioPlayerFactory {
     /**
      * Cria um AudioPlayer compatível com a plataforma atual.
      */
-    public static AudioPlayer create() {
-
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("linux")) {
-            return new LinuxAudioPlayer();
+    public static AudioPlayer create(boolean Debug) {
+        if(Debug){
+            return new DummyAudioPlayer();
         }
-
-        // Ainda não há implementação real para Android/Windows.
-        // Utilizamos o Dummy como fallback seguro nesses casos.
-        return new DummyAudioPlayer();
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return new WindowsAudioPlayer();
+        } else {
+            return new LinuxAudioPlayer();
+        } 
+        
+           
     }
 
 }

@@ -35,6 +35,15 @@ public class DummyAudioPlayer implements AudioPlayer {
      */
     private String currentFile;
 
+    public DummyAudioPlayer(){
+        
+
+
+
+
+    }
+
+
     /**
      * Inicia a reprodução de um arquivo.
      *
@@ -51,7 +60,7 @@ public class DummyAudioPlayer implements AudioPlayer {
         this.currentFile = file;
 
         // Marca que o player está ativo.
-        this.playing = true;
+        this.setPlayingTrue();
 
         // Cria uma nova thread responsável pela reprodução.
         playbackThread = new Thread(new Runnable() {
@@ -96,7 +105,7 @@ public class DummyAudioPlayer implements AudioPlayer {
         }
 
         ConsolePrompt.println(
-                "[DummyAudioPlayer] Playback finished.");
+                "[DummyAudioPlayer] Playback finished.\n");
     }
 
     /**
@@ -107,12 +116,12 @@ public class DummyAudioPlayer implements AudioPlayer {
 
         // Caso não exista nenhuma reprodução ativa,
         // não há nada para fazer.
-        if (!playing) {
+        if (this.playing == false) {
             return;
         }
 
         // Solicita ao loop principal que termine.
-        playing = false;
+        this.setPlayingFalse();
 
         // Caso a thread esteja dormindo no Thread.sleep(),
         // acordamos imediatamente.
@@ -142,6 +151,17 @@ public class DummyAudioPlayer implements AudioPlayer {
     @Override
     public boolean isPlaying() {
         return playing;
+    }
+
+
+    private void setPlayingTrue(){
+        this.playing = true;
+        return;
+    }
+
+    private void setPlayingFalse(){
+        this.playing = false;
+        return;
     }
 
 }
