@@ -92,8 +92,18 @@ public class ImageViewer extends JPanel {
 
         timer.stop();
 
-        StringListResult result = (StringListResult) dispatcher.dispatch(
-                new Command("GET_THEME_IMAGES"));
+        StringListResult result;
+
+        try {
+            result = (StringListResult) dispatcher.dispatch(
+                    new Command("GET_THEME_IMAGES"));
+        } catch (br.org.tabletoprpg.soundtrack.exception.TabletopExeption ex) {
+            this.images = new ArrayList<>();
+            this.currentIndex = 0;
+            imageLabel.setIcon(null);
+            imageLabel.setText("(erro ao carregar imagens: " + ex.getMessage() + ")");
+            return;
+        }
 
         this.images = new ArrayList<>(result.values());
         this.currentIndex = 0;

@@ -15,6 +15,7 @@ import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
 import br.org.tabletoprpg.soundtrack.controller.result.StatusResult;
 import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
+import br.org.tabletoprpg.soundtrack.exception.TabletopExeption;
 
 /**
  * Tela exibida quando nenhuma OST estiver carregada.
@@ -78,10 +79,19 @@ public class SelectionScreen extends JPanel {
 
         ostListPanel.removeAll();
 
-        StringListResult result = (StringListResult) dispatcher.dispatch(
-                new Command("LIST_OSTS"));
+        Collection<String> osts;
 
-        Collection<String> osts = result.values();
+        try {
+            StringListResult result = (StringListResult) dispatcher.dispatch(
+                    new Command("LIST_OSTS"));
+            osts = result.values();
+        } catch (TabletopExeption ex) {
+            showErrorState(ex.getMessage());
+            return;
+        } catch (RuntimeException ex) {
+            showErrorState("Erro inesperado ao listar OSTs: " + ex.getMessage());
+            return;
+        }
 
         for (String ostName : osts) {
 
@@ -97,12 +107,34 @@ public class SelectionScreen extends JPanel {
         ostListPanel.repaint();
     }
 
+    private void showErrorState(String message) {
+
+        JLabel errorLabel = new JLabel(
+                "<html><body style='width: 300px; text-align: center;'>"
+                        + "⚠ " + message
+                        + "</body></html>",
+                SwingConstants.CENTER);
+        errorLabel.setAlignmentX(CENTER_ALIGNMENT);
+        errorLabel.setForeground(java.awt.Color.RED);
+
+        ostListPanel.add(Box.createVerticalStrut(20));
+        ostListPanel.add(errorLabel);
+
+        ostListPanel.revalidate();
+        ostListPanel.repaint();
+    }
+
     /**
      * Dispara SET_OST <nome> e solicita a atualização/troca de tela.
      */
     private void selectOst(String ostName) {
 
-        dispatcher.dispatch(new Command("SET_OST", ostName));
+        try {
+            dispatcher.dispatch(new Command("SET_OST", ostName));
+        } catch (TabletopExeption ex) {
+            SwingErrorHandler.showError(this, ex.getMessage());
+            return;
+        }
 
         onChange.run();
     }
