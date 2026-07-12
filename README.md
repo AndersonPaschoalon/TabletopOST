@@ -1,6 +1,6 @@
 # TableTopOST — Sistema de Ambientação Sonora Simultânea para RPG de Mesa
 
-![Interface gráfica do TableTopOST](images/gui.png)
+![Interface gráfica do TableTopOST](docs/gui.png)
 
 Player de trilha sonora para mesas de RPG com **dois canais independentes e simultâneos**: música e som ambiente. Organize suas OSTs em campanhas (ex.: `dnd`, `lovecraft`, `iron_kingdoms`) e temas (ex.: `village`, `dungeon`, `asylum`), e controle tudo via terminal (CLI) ou interface gráfica (Swing).
 
@@ -16,7 +16,7 @@ Player de trilha sonora para mesas de RPG com **dois canais independentes e simu
 
 > Não é necessário instalar bibliotecas Java extras de áudio — as dependências do projeto (Gson, JLine) já vêm resolvidas automaticamente pelo Maven a partir do `pom.xml`.
 
-## 2. Dependência de áudio — a parte mais importante
+## 2. Dependência de áudio
 
 O player de áudio muda de acordo com o sistema operacional:
 
@@ -158,12 +158,3 @@ python3 generate_manifest.py
 ```
 
 O script exige que cada tema tenha ao menos um arquivo em `songs/`, `ambience/` e `images/` para ser considerado válido.
-
----
-
-## 7. Resolução de problemas
-
-- **"Não toca nenhum som" (Linux):** confirme que o `ffplay` está instalado e no `PATH` (`ffplay -version`).
-- **"Não toca nenhum som" (Windows):** os arquivos são `.mp3`, e a API nativa do Java não decodifica MP3 sem plugin — converta para `.wav` ou use WSL/Linux com ffmpeg.
-- **"OST não encontrada":** confira se você está executando o `.jar` a partir da raiz do projeto (onde ficam as pastas `local_storage/` e `cache/`).
-- **Áudio "engasgando" ou travando no Linux:** o processo do `ffplay` é bloqueante por música — isso é esperado, cada faixa toca até o fim ou até receber `NEXT_SONG`/`PAUSE_SONG`.
