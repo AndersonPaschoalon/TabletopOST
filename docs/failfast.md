@@ -1,4 +1,4 @@
-# Checklist de Testes Manuais — CLI (Tabletop RPG Soundtrack)
+# Testes Manuais — CLI (Tabletop RPG Soundtrack)
 
 > Cobertura: comandos válidos, fail-fast de parâmetros, fail-fast de estado,
 > erros de domínio, comandos desconhecidos, fluxo feliz completo e
@@ -44,26 +44,7 @@ selecionado) não foi cumprido.
 - [ ] linha vazia / só espaços → não deve fazer nada nem quebrar, apenas reexibir o prompt
 - [ ] comando com hífen (`get-theme-image 0`) → deve ser normalizado e funcionar igual a `get_theme_image 0`
 
-## 5. Fluxo feliz completo (regressão end-to-end)
-
-Rodar em sequência e conferir que cada passo retorna a mensagem esperada e
-que o prompt `[ost/tema]>` atualiza corretamente:
-
-- [ ] `list_osts` → lista as OSTs disponíveis
-- [ ] `set_ost dnd` → confirma OST e tema padrão selecionados
-- [ ] `status` → mostra OST atual, tema atual, música/ambiente pausados
-- [ ] `list_themes` → lista os temas da OST atual
-- [ ] `set_theme forest` → confirma troca de tema
-- [ ] `play_song` → confirma música tocando
-- [ ] `play_ambience` → confirma ambiente tocando
-- [ ] `status` → confirma ambos "▶ tocando"
-- [ ] `pause_both` → confirma ambos pausados
-- [ ] `status` → confirma ambos "⏸ pausado(a)"
-- [ ] `unset_theme` → volta ao tema padrão da OST
-- [ ] `unset_ost` → reprodução para, prompt volta para `[sem OST]>`
-- [ ] `status` → confirma "(nenhuma)" / "(nenhum)" em tudo
-
-## 6. Concorrência (logs de background vs. digitação)
+## 5. Concorrência (logs de background vs. digitação)
 
 - [ ] `play_both` e, **enquanto o `DummyAudioPlayer` está logando**
       `[DummyAudioPlayer] Playing: ...`, digitar `PAUSE_BOTH` bem devagar,
@@ -72,35 +53,10 @@ que o prompt `[ost/tema]>` atualiza corretamente:
       embaralhar o texto sendo digitado (sem repetir o bug
       `PAUSE_BO[DummyAudioPlayer] Playing... TH`)
 
-## 7. Controles de terminal
-
-- [ ] `Ctrl+C` no meio de uma linha digitada → limpa a linha atual, não
-      derruba a aplicação
-- [ ] `Ctrl+D` → funciona como `exit`
-- [ ] `help` → lista todos os 18 comandos, agrupados por categoria
-- [ ] `clear` → limpa a tela e reexibe a mensagem de boas-vindas
-- [ ] `exit` → encerra a aplicação de forma limpa (sem stacktrace)
-
-## 8. Teste de cache/local_storage (camada adjacente, mas afeta a CLI)
+## 6. Teste de cache/local_storage (camada adjacente, mas afeta a CLI)
 
 - [ ] Apagar `cache/<ost>` e rodar `set_ost <ost>` de novo → deve
       reconstruir o cache automaticamente
 - [ ] Apagar a pasta `cache/` inteira e rodar `set_ost <ost>` → **requer
       o fix `createDirectory` → `createDirectories` em
       `LocalCatalogService`**; sem o fix, quebra com `DownloadError`
-
----
-
-## Observações para reportar ao grupo (fora do escopo da CLI, mas achadas no caminho)
-
-- Todas as exceções custom (`TabletopExeption`, `DownloadError`,
-  `ErrorLoadingOst`, `ErrorLoadingTheme`, `OstNotFoundError`,
-  `ThemeNotFoundError`, `ConnectionError`) são **Unchecked**
-  (`extends RuntimeException`). Se o requisito pede pelo menos uma
-  **Checked Exception**, isso ainda não existe no projeto.
-- Mensagem de erro sem espaço: `"A OST" + ostName + " não foi encontrada"`
-  em `LocalCatalogService.downloadOst(...)` — sai como
-  `"A OSTdnd_invalido não foi encontrada"`.
-- `AudioPlayerFactory` sempre retorna `DummyAudioPlayer` — o
-  `LinuxAudioPlayer` (já implementado, usa `ffplay`) nunca é usado de
-  fato, então nenhum som real toca ainda.
