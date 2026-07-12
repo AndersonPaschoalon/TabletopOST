@@ -12,8 +12,6 @@ import javax.swing.SwingUtilities;
  * Esta classe representa a única JFrame existente durante toda a execução do
  * programa.
  *
- * Ela não possui nenhuma regra de negócio.
- *
  * Sua única responsabilidade é:
  *
  * - criar a janela;
@@ -22,8 +20,8 @@ import javax.swing.SwingUtilities;
  *
  * Atualmente existem apenas duas telas:
  *
- * - seleção de OST;
- * - controle da reprodução.
+ * - SelectionScreen
+ * - PlaybackScreen
  *
  * A troca entre elas ocorre através do CardLayout.
  */
@@ -41,57 +39,51 @@ public class MainWindow extends JFrame {
     private final CardLayout cardLayout;
 
     /**
-     * Painel principal da janela.
-     *
-     * Todas as telas são adicionadas neste painel.
+     * Painel raiz da aplicação.
      */
     private final JPanel rootPanel;
 
     /**
+     * Referências para as telas registradas.
+     */
+    private final SelectionScreen selectionScreen;
+    private final PlaybackScreen playbackScreen;
+
+    /**
      * Constrói a janela principal.
-     *
-     * @param selectionPanel tela de seleção da OST
-     * @param playbackPanel  tela principal de reprodução
      */
     public MainWindow(
-            JPanel selectionPanel,
-            JPanel playbackPanel) {
+            SelectionScreen selectionScreen,
+            PlaybackScreen playbackScreen) {
 
         super("Tabletop RPG Soundtrack");
 
-        // -------------------------------------------------------------
-        // Configuração básica da janela.
-        // -------------------------------------------------------------
+        this.selectionScreen = selectionScreen;
+        this.playbackScreen = playbackScreen;
 
+        /*
+         * Configuração da janela.
+         */
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setSize(1000, 700);
-
         setLocationRelativeTo(null);
 
-        // -------------------------------------------------------------
-        // Configuração do CardLayout.
-        // -------------------------------------------------------------
-
+        /*
+         * Configuração do CardLayout.
+         */
         this.cardLayout = new CardLayout();
-
         this.rootPanel = new JPanel(cardLayout);
 
-        // -------------------------------------------------------------
-        // Registro das telas.
-        // -------------------------------------------------------------
-
+        /*
+         * Registro das telas.
+         */
         this.rootPanel.add(
-                selectionPanel,
+                this.selectionScreen,
                 SELECTION_SCREEN);
 
         this.rootPanel.add(
-                playbackPanel,
+                this.playbackScreen,
                 PLAYBACK_SCREEN);
-
-        // -------------------------------------------------------------
-        // O painel principal passa a ser o conteúdo da janela.
-        // -------------------------------------------------------------
 
         setContentPane(rootPanel);
     }
@@ -101,9 +93,7 @@ public class MainWindow extends JFrame {
      */
     public void showSelectionScreen() {
 
-        this.cardLayout.show(
-                this.rootPanel,
-                SELECTION_SCREEN);
+        cardLayout.show(rootPanel, SELECTION_SCREEN);
 
         refresh();
     }
@@ -113,34 +103,40 @@ public class MainWindow extends JFrame {
      */
     public void showPlaybackScreen() {
 
-        this.cardLayout.show(
-                this.rootPanel,
-                PLAYBACK_SCREEN);
+        cardLayout.show(rootPanel, PLAYBACK_SCREEN);
 
         refresh();
     }
 
     /**
      * Atualiza a interface gráfica.
-     *
-     * Deve ser chamado sempre que ocorrer uma troca de tela.
      */
     public void refresh() {
 
-        this.rootPanel.revalidate();
-
-        this.rootPanel.repaint();
+        rootPanel.revalidate();
+        rootPanel.repaint();
     }
 
     /**
      * Exibe a janela.
-     *
-     * Este método garante que a operação seja executada na Event Dispatch
-     * Thread do Swing.
      */
     public void open() {
 
         SwingUtilities.invokeLater(() -> setVisible(true));
+    }
+
+    /**
+     * Retorna a tela de seleção.
+     */
+    public SelectionScreen getSelectionScreen() {
+        return selectionScreen;
+    }
+
+    /**
+     * Retorna a tela principal.
+     */
+    public PlaybackScreen getPlaybackScreen() {
+        return playbackScreen;
     }
 
 }
