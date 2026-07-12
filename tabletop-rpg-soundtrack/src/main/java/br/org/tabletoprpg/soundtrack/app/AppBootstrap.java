@@ -41,7 +41,7 @@ public final class AppBootstrap {
         /*
          * Serviço de catálogo (sincroniza OSTs de local_storage para o cache).
          */
-        CatalogService catalogService = new LocalCatalogService("local_storage");
+        CatalogService catalogService = new LocalCatalogService("TabletopOST/tabletop-rpg-soundtrack/local_storage");
 
         /*
          * Loader responsável por transformar o manifest.json em objetos de domínio.
