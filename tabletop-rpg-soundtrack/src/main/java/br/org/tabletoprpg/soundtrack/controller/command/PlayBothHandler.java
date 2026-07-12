@@ -2,6 +2,7 @@ package br.org.tabletoprpg.soundtrack.controller.command;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class PlayBothHandler implements CommandHandler {
@@ -15,9 +16,10 @@ public class PlayBothHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
         this.sessionService.playBoth();
-        return "▶ Tocando música + ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.";
+        return new StringResult(
+                "▶ Tocando música + ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.");
     }
 }

@@ -1,9 +1,13 @@
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import java.util.List;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import br.org.tabletoprpg.soundtrack.controller.Command;
+
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.model.Theme;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
@@ -19,7 +23,7 @@ public class GetThemeImageHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 1, COMMAND_NAME);
 
         String indexParam = extractString(command.getParameters(), 0, "index");
@@ -44,8 +48,7 @@ public class GetThemeImageHandler implements CommandHandler {
             throw new RuntimeException(
                     "Índice inválido. O tema '" + theme.name() + "' possui " + images.size() + " imagem(ns).");
         }
-
-        ConsolePrompt.println(images.get(index));
-        return null;
+        String image = images.get(index);
+        return new StringResult(image);
     }
 }

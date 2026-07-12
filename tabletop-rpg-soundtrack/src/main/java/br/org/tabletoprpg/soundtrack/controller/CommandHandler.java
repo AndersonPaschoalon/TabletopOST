@@ -2,9 +2,11 @@ package br.org.tabletoprpg.soundtrack.controller;
 
 import java.util.Objects;
 
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
+
 public interface CommandHandler {
 
-    String handle(Command command);
+    Result handle(Command command);
 
     default void requireParamCount(
             String[] params,

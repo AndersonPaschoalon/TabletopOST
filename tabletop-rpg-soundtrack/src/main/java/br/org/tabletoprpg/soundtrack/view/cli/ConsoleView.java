@@ -2,6 +2,7 @@ package br.org.tabletoprpg.soundtrack.view.cli;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class ConsoleView {
@@ -41,10 +42,10 @@ public class ConsoleView {
 
             try {
                 Command command = CommandParser.parse(line);
-                String message = dispatcher.dispatch(command);
+                Result result = dispatcher.dispatch(command);
 
-                if (message != null) {
-                    prompt.printSuccess(message);
+                if (result != null && !result.asText().isBlank()) {
+                    prompt.println(result.asText());
                 }
             } catch (Exception ex) {
                 prompt.printError(ex.getMessage());

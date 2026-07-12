@@ -1,7 +1,11 @@
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
 import br.org.tabletoprpg.soundtrack.model.Theme;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
@@ -17,20 +21,18 @@ public class GetThemeImagesHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringListResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         Theme theme = this.sessionService.getCurrentTheme();
+        Collection<String> allImages = new ArrayList<String>();
 
         if (theme == null) {
-            ConsolePrompt.println("Nenhum tema selecionado.");
-            return null;
+            return new StringListResult(allImages);
         }
 
-        ConsolePrompt.println("Imagens do tema '" + theme.name() + "':");
-        for (String image : theme.images()) {
-            ConsolePrompt.println(" - " + image);
-        }
-        return null;
+        allImages.addAll(theme.images());
+        StringListResult result = new StringListResult(allImages);
+        return result;
     }
 }

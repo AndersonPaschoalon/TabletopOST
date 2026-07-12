@@ -1,4 +1,4 @@
-cli/ConsolePrompt.java
+ConsolePrompt.java
 ```
 package br.org.tabletoprpg.soundtrack.view.cli;
 
@@ -83,8 +83,12 @@ public class ConsolePrompt {
         println("\u001B[36m[ Reprodução ]\u001B[0m");
         printCommandHelp("PLAY_SONG", "Reproduz uma música do tema atual.");
         printCommandHelp("PAUSE_SONG", "Pausa a música atual.");
+        printCommandHelp("NEXT_SONG", "Pula para a próxima música do tema atual.");
+        printCommandHelp("PREVIOUS_SONG", "Volta para a música anterior do tema atual.");
         printCommandHelp("PLAY_AMBIENCE", "Reproduz o som ambiente do tema atual.");
         printCommandHelp("PAUSE_AMBIENCE", "Pausa o som ambiente atual.");
+        printCommandHelp("NEXT_AMBIENCE", "Pula para o próximo som ambiente do tema atual.");
+        printCommandHelp("PREVIOUS_AMBIENCE", "Volta para o som ambiente anterior do tema atual.");
         printCommandHelp("PLAY_BOTH", "Reproduz música e ambiente juntos.");
         printCommandHelp("PAUSE_BOTH", "Pausa música e ambiente juntos.");
         println("");
@@ -136,12 +140,13 @@ public class ConsolePrompt {
 
 ```
 
-cli/ConsoleView.java
+ConsoleView.java
 ```
 package br.org.tabletoprpg.soundtrack.view.cli;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandDispatcher;
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class ConsoleView {
@@ -181,10 +186,10 @@ public class ConsoleView {
 
             try {
                 Command command = CommandParser.parse(line);
-                String message = dispatcher.dispatch(command);
+                Result result = dispatcher.dispatch(command);
 
-                if (message != null) {
-                    prompt.printSuccess(message);
+                if (result != null && !result.asText().isBlank()) {
+                    prompt.println(result.asText());
                 }
             } catch (Exception ex) {
                 prompt.printError(ex.getMessage());
@@ -214,7 +219,7 @@ public class ConsoleView {
 
 ```
 
-cli/CommandParser.java
+CommandParser.java
 ```
 package br.org.tabletoprpg.soundtrack.view.cli;
 

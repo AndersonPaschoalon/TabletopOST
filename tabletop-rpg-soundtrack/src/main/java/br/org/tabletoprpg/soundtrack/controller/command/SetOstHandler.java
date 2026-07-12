@@ -2,6 +2,7 @@ package br.org.tabletoprpg.soundtrack.controller.command;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class SetOstHandler implements CommandHandler {
@@ -15,13 +16,13 @@ public class SetOstHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 1, COMMAND_NAME);
         String ostName = extractString(command.getParameters(), 0, "ost");
 
         this.sessionService.setCurrentOst(ostName);
 
         String theme = this.sessionService.getCurrentThemeName();
-        return "OST '" + ostName + "' selecionada. Tema atual: '" + theme + "'.";
+        return new StringResult("OST '" + ostName + "' selecionada. Tema atual: '" + theme + "'.");
     }
 }
