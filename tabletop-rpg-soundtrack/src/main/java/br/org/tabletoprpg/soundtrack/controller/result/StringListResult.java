@@ -1,7 +1,6 @@
 package br.org.tabletoprpg.soundtrack.controller.result;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.StringJoiner;
 
 /**

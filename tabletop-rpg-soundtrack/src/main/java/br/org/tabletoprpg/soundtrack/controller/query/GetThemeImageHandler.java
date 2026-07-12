@@ -2,14 +2,10 @@ package br.org.tabletoprpg.soundtrack.controller.query;
 
 import java.util.List;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import br.org.tabletoprpg.soundtrack.controller.Command;
-
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
 import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.model.Theme;
-import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class GetThemeImageHandler implements CommandHandler {
@@ -38,8 +34,7 @@ public class GetThemeImageHandler implements CommandHandler {
         Theme theme = this.sessionService.getCurrentTheme();
 
         if (theme == null) {
-            ConsolePrompt.println("Nenhum tema selecionado.");
-            return null;
+            return new StringResult("");
         }
 
         List<String> images = List.copyOf(theme.images());

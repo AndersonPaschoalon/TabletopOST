@@ -1,10 +1,12 @@
 package br.org.tabletoprpg.soundtrack.view.swing;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,17 +62,31 @@ public class PlaybackScreen extends JPanel {
         // Barra superior: menu hambúrguer + OST atual + Tema atual.
         // ------------------------------------------------------------
 
-        JPanel topBar = new JPanel(new BorderLayout());
+        JPanel topBar = new JPanel(new GridLayout(1, 3));
 
         ThemeMenu themeMenu = new ThemeMenu(dispatcher, onChange);
-        topBar.add(themeMenu, BorderLayout.WEST);
+        JPanel westWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        westWrapper.add(themeMenu);
+        topBar.add(westWrapper);
 
         this.ostLabel = new JLabel("", SwingConstants.CENTER);
         this.ostLabel.setFont(ostLabel.getFont().deriveFont(Font.BOLD, 16f));
-        topBar.add(ostLabel, BorderLayout.CENTER);
+        topBar.add(ostLabel);
 
         this.themeLabel = new JLabel("", SwingConstants.CENTER);
-        topBar.add(themeLabel, BorderLayout.EAST);
+
+        JButton changeOstButton = new JButton("↩ Trocar OST");
+        changeOstButton.setToolTipText("Volta para a tela de seleção de OST");
+        changeOstButton.addActionListener(e -> {
+            dispatcher.dispatch(new Command("UNSET_OST"));
+            onChange.run();
+        });
+
+        JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        eastPanel.add(themeLabel);
+        eastPanel.add(changeOstButton);
+
+        topBar.add(eastPanel);
 
         add(topBar, BorderLayout.NORTH);
 
@@ -84,7 +100,7 @@ public class PlaybackScreen extends JPanel {
         centerPanel.add(imageViewer, BorderLayout.CENTER);
 
         JPanel controls = new JPanel();
-        controls.setLayout(new javax.swing.BoxLayout(controls, javax.swing.BoxLayout.Y_AXIS));
+        controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
 
         controls.add(buildTrackControlGroup(
                 "Music",

@@ -3,7 +3,6 @@ package br.org.tabletoprpg.soundtrack.controller.query;
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
 import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
-import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class ListThemesHandler implements CommandHandler {

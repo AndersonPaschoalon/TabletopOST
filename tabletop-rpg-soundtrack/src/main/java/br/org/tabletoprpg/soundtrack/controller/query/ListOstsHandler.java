@@ -1,12 +1,8 @@
 package br.org.tabletoprpg.soundtrack.controller.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
 import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
-import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 /**

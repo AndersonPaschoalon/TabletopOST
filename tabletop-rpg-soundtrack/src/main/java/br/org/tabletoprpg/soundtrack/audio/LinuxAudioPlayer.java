@@ -30,7 +30,7 @@ public class LinuxAudioPlayer implements AudioPlayer {
                     "-nodisp",
                     "-autoexit",
                     "-loglevel", "quiet",
-                    file);
+                    fileDir);
 
             builder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
             builder.redirectError(ProcessBuilder.Redirect.DISCARD);
