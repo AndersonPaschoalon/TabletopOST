@@ -1,6 +1,6 @@
 # TableTopOST — Sistema de Ambientação Sonora Simultânea para RPG de Mesa
 
-![Interface gráfica do TableTopOST](images/gui.png)
+![Interface gráfica do TableTopOST](docs/gui.png)
 
 Player de trilha sonora para mesas de RPG com **dois canais independentes e simultâneos**: música e som ambiente. Organize suas OSTs em campanhas (ex.: `dnd`, `lovecraft`, `iron_kingdoms`) e temas (ex.: `village`, `dungeon`, `asylum`), e controle tudo via terminal (CLI) ou interface gráfica (Swing).
 
@@ -16,7 +16,7 @@ Player de trilha sonora para mesas de RPG com **dois canais independentes e simu
 
 > Não é necessário instalar bibliotecas Java extras de áudio — as dependências do projeto (Gson, JLine) já vêm resolvidas automaticamente pelo Maven a partir do `pom.xml`.
 
-## 2. Dependência de áudio — a parte mais importante
+## 2. Dependência de áudio
 
 O player de áudio muda de acordo com o sistema operacional:
 
