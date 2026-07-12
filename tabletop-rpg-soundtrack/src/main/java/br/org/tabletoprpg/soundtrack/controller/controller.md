@@ -5,22 +5,27 @@ package br.org.tabletoprpg.soundtrack.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import br.org.tabletoprpg.soundtrack.controller.command.GetCurrentThemeHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImageHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImagesHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.ListOstsHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.ListThemesHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.NextAmbienceHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.NextSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseBothHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlayAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlayBothHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PlaySongHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.PreviousAmbienceHandler;
+import br.org.tabletoprpg.soundtrack.controller.command.PreviousSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetOstHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetThemeHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.StatusHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.UnsetOstHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.UnsetThemeHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetCurrentThemeHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetThemeImageHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetThemeImagesHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.ListOstsHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.ListThemesHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.StatusHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class CommandDispatcher {
@@ -44,9 +49,13 @@ public class CommandDispatcher {
 
         h.put(PlaySongHandler.COMMAND_NAME, new PlaySongHandler(sessionService));
         h.put(PauseSongHandler.COMMAND_NAME, new PauseSongHandler(sessionService));
+        h.put(NextSongHandler.COMMAND_NAME, new NextSongHandler(sessionService));
+        h.put(PreviousSongHandler.COMMAND_NAME, new PreviousSongHandler(sessionService));
 
         h.put(PlayAmbienceHandler.COMMAND_NAME, new PlayAmbienceHandler(sessionService));
         h.put(PauseAmbienceHandler.COMMAND_NAME, new PauseAmbienceHandler(sessionService));
+        h.put(NextAmbienceHandler.COMMAND_NAME, new NextAmbienceHandler(sessionService));
+        h.put(PreviousAmbienceHandler.COMMAND_NAME, new PreviousAmbienceHandler(sessionService));
 
         h.put(PlayBothHandler.COMMAND_NAME, new PlayBothHandler(sessionService));
         h.put(PauseBothHandler.COMMAND_NAME, new PauseBothHandler(sessionService));
@@ -61,7 +70,7 @@ public class CommandDispatcher {
         return h;
     }
 
-    public String dispatch(Command command) {
+    public Result dispatch(Command command) {
 
         CommandHandler handler = handlers.get(command.getAction());
 
@@ -106,9 +115,11 @@ package br.org.tabletoprpg.soundtrack.controller;
 
 import java.util.Objects;
 
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
+
 public interface CommandHandler {
 
-    String handle(Command command);
+    Result handle(Command command);
 
     default void requireParamCount(
             String[] params,
@@ -157,70 +168,156 @@ public interface CommandHandler {
 }
 ```
 
-command/UnsetThemeHandler.java
+result/EmptyResult.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.result;
 
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+/**
+ * Resultado utilizado quando um comando não possui informações para retornar.
+ */
+public final class EmptyResult implements Result {
 
-public class UnsetThemeHandler implements CommandHandler {
+    public static final EmptyResult INSTANCE = new EmptyResult();
 
-    public static final String COMMAND_NAME = "UNSET_THEME";
-
-    private final SessionService sessionService;
-
-    public UnsetThemeHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
+    private EmptyResult() {
     }
 
     @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.unsetTheme();
-        return "Tema resetado para o padrão: '" + this.sessionService.getCurrentThemeName() + "'.";
+    public String asText() {
+        return "";
     }
+
 }
-
 ```
 
-command/PlayAmbienceHandler.java
+result/Result.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.result;
 
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+/**
+ * Resultado produzido por uma operação do Controller.
+ *
+ * Todo resultado deve ser capaz de produzir uma representação textual,
+ * permitindo que a CLI simplesmente imprima o retorno recebido.
+ *
+ * Interfaces gráficas podem utilizar o tipo concreto para acessar
+ * informações estruturadas.
+ */
+public interface Result {
 
-public class PlayAmbienceHandler implements CommandHandler {
+    /**
+     * Retorna uma representação textual do resultado.
+     */
+    String asText();
 
-    public static final String COMMAND_NAME = "PLAY_AMBIENCE";
+}
+```
 
-    private final SessionService sessionService;
+result/StatusResult.java
+```
+package br.org.tabletoprpg.soundtrack.controller.result;
 
-    public PlayAmbienceHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
+/**
+ * Estado atual da aplicação.
+ */
+public record StatusResult(
+
+        String currentOst,
+
+        String currentTheme,
+
+        boolean songPlaying,
+
+        boolean ambiencePlaying)
+
+        implements Result {
+
+    @Override
+    public String asText() {
+
+        return String.format(
+                """
+                        OST       : %s
+                        Theme     : %s
+                        Song      : %s
+                        Ambience  : %s
+                        """,
+                currentOst,
+                currentTheme,
+                songPlaying ? "Playing" : "Stopped",
+                ambiencePlaying ? "Playing" : "Stopped");
+    }
+
+}
+```
+
+result/StringListResult.java
+```
+package br.org.tabletoprpg.soundtrack.controller.result;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.StringJoiner;
+
+/**
+ * Resultado contendo uma lista de Strings.
+ */
+public record StringListResult(
+        Collection<String> values)
+        implements Result {
+
+    @Override
+    public String asText() {
+
+        StringJoiner joiner = new StringJoiner(System.lineSeparator());
+
+        for (String value : values) {
+            joiner.add(value);
+        }
+
+        return joiner.toString();
+    }
+
+}
+```
+
+result/StringResult.java
+```
+package br.org.tabletoprpg.soundtrack.controller.result;
+
+import java.util.Objects;
+
+/**
+ * Resultado contendo apenas uma String.
+ */
+public record StringResult(String value) implements Result {
+
+    public StringResult {
+
+        Objects.requireNonNull(value);
+
     }
 
     @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.playAmbience();
-        return "▶ Tocando som ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.";
+    public String asText() {
+        return value;
     }
+
 }
-
 ```
 
-command/GetThemeImageHandler.java
+query/GetThemeImageHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import java.util.List;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import br.org.tabletoprpg.soundtrack.controller.Command;
+
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.model.Theme;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
@@ -236,7 +333,7 @@ public class GetThemeImageHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 1, COMMAND_NAME);
 
         String indexParam = extractString(command.getParameters(), 0, "index");
@@ -261,20 +358,20 @@ public class GetThemeImageHandler implements CommandHandler {
             throw new RuntimeException(
                     "Índice inválido. O tema '" + theme.name() + "' possui " + images.size() + " imagem(ns).");
         }
-
-        ConsolePrompt.println(images.get(index));
-        return null;
+        String image = images.get(index);
+        return new StringResult(image);
     }
 }
 
 ```
 
-command/GetCurrentThemeHandler.java
+query/GetCurrentThemeHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class GetCurrentThemeHandler implements CommandHandler {
@@ -288,55 +385,28 @@ public class GetCurrentThemeHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         String themeName = this.sessionService.getCurrentThemeName();
 
         if (themeName == null) {
-            return "Nenhum tema selecionado.";
+            return new StringResult("");
         }
 
-        return "Tema atual: " + themeName;
+        return new StringResult(themeName);
     }
 }
 
 ```
 
-command/UnsetOstHandler.java
+query/StatusHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class UnsetOstHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "UNSET_OST";
-
-    private final SessionService sessionService;
-
-    public UnsetOstHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.unsetOst();
-        return "OST desselecionada. Reprodução interrompida.";
-    }
-}
-
-```
-
-command/StatusHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StatusResult;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
@@ -351,30 +421,40 @@ public class StatusHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StatusResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+
+        // ConsolePrompt.println("\u001B[1m--- Status ---\u001B[0m");
+        // String ost = this.sessionService.getCurrentOstName();
+        // String theme = this.sessionService.getCurrentThemeName();
+        // ConsolePrompt.println("OST atual: " + (ost == null ? "(nenhuma)" : ost));
+        // ConsolePrompt.println("Tema atual: " + (theme == null ? "(nenhum)" : theme));
+        // ConsolePrompt.println("Música: " + (this.sessionService.isSongPlaying() ? "▶
+        // tocando" : "▌▌ pausada"));
+        // ConsolePrompt
+        // .println("Ambiente: " + (this.sessionService.isAmbiencePlaying() ? "▶
+        // tocando" : "▌▌ pausado"));
 
         String ost = this.sessionService.getCurrentOstName();
         String theme = this.sessionService.getCurrentThemeName();
-
-        ConsolePrompt.println("\u001B[1m--- Status ---\u001B[0m");
-        ConsolePrompt.println("OST atual:      " + (ost == null ? "(nenhuma)" : ost));
-        ConsolePrompt.println("Tema atual:     " + (theme == null ? "(nenhum)" : theme));
-        ConsolePrompt.println("Música:         " + (this.sessionService.isSongPlaying() ? "▶ tocando" : "▌▌ pausada"));
-        ConsolePrompt.println("Ambiente:       " + (this.sessionService.isAmbiencePlaying() ? "▶ tocando" : "▌▌ pausado"));
-
-        return null;
+        StatusResult r = new StatusResult(ost, theme, this.sessionService.isSongPlaying(),
+                this.sessionService.isAmbiencePlaying());
+        return r;
     }
 }
 
 ```
 
-command/ListOstsHandler.java
+query/ListOstsHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
@@ -392,64 +472,26 @@ public class ListOstsHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringListResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         var osts = this.sessionService.getListOfOsts();
-
-        if (osts.isEmpty()) {
-            ConsolePrompt.println("Nenhuma OST disponível.");
-            return null;
-        }
-
-        ConsolePrompt.println("OSTs disponíveis:");
-        for (String ost : osts) {
-            ConsolePrompt.println(" - " + ost);
-        }
-        return null;
+        return new StringListResult(osts);
     }
 }
 
 ```
 
-command/SetThemeHandler.java
+query/GetThemeImagesHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class SetThemeHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "SET_THEME";
-
-    private final SessionService sessionService;
-
-    public SetThemeHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 1, COMMAND_NAME);
-        String themeName = extractString(command.getParameters(), 0, "theme");
-
-        this.sessionService.setCurrentTheme(themeName);
-
-        return "Tema '" + themeName + "' selecionado (OST: '"
-                + this.sessionService.getCurrentOstName() + "').";
-    }
-}
-
-```
-
-command/GetThemeImagesHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
 import br.org.tabletoprpg.soundtrack.model.Theme;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
@@ -465,148 +507,31 @@ public class GetThemeImagesHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringListResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         Theme theme = this.sessionService.getCurrentTheme();
+        Collection<String> allImages = new ArrayList<String>();
 
         if (theme == null) {
-            ConsolePrompt.println("Nenhum tema selecionado.");
-            return null;
+            return new StringListResult(allImages);
         }
 
-        ConsolePrompt.println("Imagens do tema '" + theme.name() + "':");
-        for (String image : theme.images()) {
-            ConsolePrompt.println(" - " + image);
-        }
-        return null;
+        allImages.addAll(theme.images());
+        StringListResult result = new StringListResult(allImages);
+        return result;
     }
 }
 
 ```
 
-command/PauseSongHandler.java
+query/ListThemesHandler.java
 ```
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class PauseSongHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "PAUSE_SONG";
-
-    private final SessionService sessionService;
-
-    public PauseSongHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.pauseSong();
-        return "▌▌ Música pausada.";
-    }
-}
-
-```
-
-command/PauseAmbienceHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class PauseAmbienceHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "PAUSE_AMBIENCE";
-
-    private final SessionService sessionService;
-
-    public PauseAmbienceHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.pauseAmbience();
-        return "▌▌ Som ambiente pausado.";
-    }
-}
-
-```
-
-command/PauseBothHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class PauseBothHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "PAUSE_BOTH";
-
-    private final SessionService sessionService;
-
-    public PauseBothHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
-        this.sessionService.pauseBoth();
-        return "▌▌ Música e ambiente pausados.";
-    }
-}
-
-```
-
-command/SetOstHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
-import br.org.tabletoprpg.soundtrack.service.session.SessionService;
-
-public class SetOstHandler implements CommandHandler {
-
-    public static final String COMMAND_NAME = "SET_OST";
-
-    private final SessionService sessionService;
-
-    public SetOstHandler(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Override
-    public String handle(Command command) {
-        requireParamCount(command.getParameters(), 1, COMMAND_NAME);
-        String ostName = extractString(command.getParameters(), 0, "ost");
-
-        this.sessionService.setCurrentOst(ostName);
-
-        String theme = this.sessionService.getCurrentThemeName();
-        return "OST '" + ostName + "' selecionada. Tema atual: '" + theme + "'.";
-    }
-}
-
-```
-
-command/ListThemesHandler.java
-```
-package br.org.tabletoprpg.soundtrack.controller.command;
-
-import br.org.tabletoprpg.soundtrack.controller.Command;
-import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
@@ -621,16 +546,338 @@ public class ListThemesHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringListResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         var themes = this.sessionService.getListOfThemes();
+        return new StringListResult(themes);
+    }
+}
 
-        ConsolePrompt.println("Temas disponíveis:");
-        for (String theme : themes) {
-            ConsolePrompt.println(" - " + theme);
-        }
-        return null;
+```
+
+command/UnsetThemeHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class UnsetThemeHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "UNSET_THEME";
+
+    private final SessionService sessionService;
+
+    public UnsetThemeHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.unsetTheme();
+        return new StringResult("Tema resetado para o padrão: '" + this.sessionService.getCurrentThemeName() + "'.");
+    }
+}
+
+```
+
+command/PlayAmbienceHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PlayAmbienceHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PLAY_AMBIENCE";
+
+    private final SessionService sessionService;
+
+    public PlayAmbienceHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.playAmbience();
+        return new StringResult("▶ Tocando som ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.");
+    }
+}
+
+```
+
+command/UnsetOstHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class UnsetOstHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "UNSET_OST";
+
+    private final SessionService sessionService;
+
+    public UnsetOstHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.unsetOst();
+        return new StringResult("OST desselecionada. Reprodução interrompida.");
+    }
+}
+
+```
+
+command/SetThemeHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class SetThemeHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "SET_THEME";
+
+    private final SessionService sessionService;
+
+    public SetThemeHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 1, COMMAND_NAME);
+        String themeName = extractString(command.getParameters(), 0, "theme");
+
+        this.sessionService.setCurrentTheme(themeName);
+
+        return new StringResult("Tema '" + themeName + "' selecionado (OST: '"
+                + this.sessionService.getCurrentOstName() + "').");
+    }
+}
+
+```
+
+command/PauseSongHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PauseSongHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PAUSE_SONG";
+
+    private final SessionService sessionService;
+
+    public PauseSongHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.pauseSong();
+        return new StringResult("▌▌ Música pausada.");
+    }
+}
+
+```
+
+command/PreviousSongHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PreviousSongHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PREVIOUS_SONG";
+
+    private final SessionService sessionService;
+
+    public PreviousSongHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.previousSong();
+        return new StringResult("◀◀ Música anterior.");
+    }
+}
+
+```
+
+command/PauseAmbienceHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PauseAmbienceHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PAUSE_AMBIENCE";
+
+    private final SessionService sessionService;
+
+    public PauseAmbienceHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.pauseAmbience();
+        return new StringResult("▌▌ Som ambiente pausado.");
+    }
+}
+
+```
+
+command/PauseBothHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PauseBothHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PAUSE_BOTH";
+
+    private final SessionService sessionService;
+
+    public PauseBothHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.pauseBoth();
+        return new StringResult("▌▌ Música e ambiente pausados.");
+    }
+}
+
+```
+
+command/NextAmbienceHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class NextAmbienceHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "NEXT_AMBIENCE";
+
+    private final SessionService sessionService;
+
+    public NextAmbienceHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.nextAmbience();
+        return new StringResult("▶▶ Próximo som ambiente.");
+    }
+}
+
+```
+
+command/SetOstHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class SetOstHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "SET_OST";
+
+    private final SessionService sessionService;
+
+    public SetOstHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 1, COMMAND_NAME);
+        String ostName = extractString(command.getParameters(), 0, "ost");
+
+        this.sessionService.setCurrentOst(ostName);
+
+        String theme = this.sessionService.getCurrentThemeName();
+        return new StringResult("OST '" + ostName + "' selecionada. Tema atual: '" + theme + "'.");
+    }
+}
+
+```
+
+command/NextSongHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class NextSongHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "NEXT_SONG";
+
+    private final SessionService sessionService;
+
+    public NextSongHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.nextSong();
+        return new StringResult("▶▶ Próxima música.");
     }
 }
 
@@ -642,6 +889,7 @@ package br.org.tabletoprpg.soundtrack.controller.command;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class PlaySongHandler implements CommandHandler {
@@ -655,10 +903,10 @@ public class PlaySongHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
         this.sessionService.playSong();
-        return "▶ Tocando música do tema '" + this.sessionService.getCurrentThemeName() + "'.";
+        return new StringResult("▶ Tocando música do tema '" + this.sessionService.getCurrentThemeName() + "'.");
     }
 }
 
@@ -670,6 +918,7 @@ package br.org.tabletoprpg.soundtrack.controller.command;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class PlayBothHandler implements CommandHandler {
@@ -683,10 +932,40 @@ public class PlayBothHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
         this.sessionService.playBoth();
-        return "▶ Tocando música + ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.";
+        return new StringResult(
+                "▶ Tocando música + ambiente do tema '" + this.sessionService.getCurrentThemeName() + "'.");
+    }
+}
+
+```
+
+command/PreviousAmbienceHandler.java
+```
+package br.org.tabletoprpg.soundtrack.controller.command;
+
+import br.org.tabletoprpg.soundtrack.controller.Command;
+import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
+import br.org.tabletoprpg.soundtrack.service.session.SessionService;
+
+public class PreviousAmbienceHandler implements CommandHandler {
+
+    public static final String COMMAND_NAME = "PREVIOUS_AMBIENCE";
+
+    private final SessionService sessionService;
+
+    public PreviousAmbienceHandler(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
+
+    @Override
+    public StringResult handle(Command command) {
+        requireParamCount(command.getParameters(), 0, COMMAND_NAME);
+        this.sessionService.previousAmbience();
+        return new StringResult("◀◀ Som ambiente anterior.");
     }
 }
 

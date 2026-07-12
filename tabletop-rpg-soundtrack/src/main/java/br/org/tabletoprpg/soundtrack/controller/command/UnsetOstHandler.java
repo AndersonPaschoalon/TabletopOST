@@ -2,6 +2,7 @@ package br.org.tabletoprpg.soundtrack.controller.command;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringResult;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class UnsetOstHandler implements CommandHandler {
@@ -15,9 +16,9 @@ public class UnsetOstHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
         this.sessionService.unsetOst();
-        return "OST desselecionada. Reprodução interrompida.";
+        return new StringResult("OST desselecionada. Reprodução interrompida.");
     }
 }

@@ -1,7 +1,8 @@
-package br.org.tabletoprpg.soundtrack.controller.command;
+package br.org.tabletoprpg.soundtrack.controller.query;
 
 import br.org.tabletoprpg.soundtrack.controller.Command;
 import br.org.tabletoprpg.soundtrack.controller.CommandHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.StringListResult;
 import br.org.tabletoprpg.soundtrack.view.cli.ConsolePrompt;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
@@ -16,15 +17,10 @@ public class ListThemesHandler implements CommandHandler {
     }
 
     @Override
-    public String handle(Command command) {
+    public StringListResult handle(Command command) {
         requireParamCount(command.getParameters(), 0, COMMAND_NAME);
 
         var themes = this.sessionService.getListOfThemes();
-
-        ConsolePrompt.println("Temas disponíveis:");
-        for (String theme : themes) {
-            ConsolePrompt.println(" - " + theme);
-        }
-        return null;
+        return new StringListResult(themes);
     }
 }

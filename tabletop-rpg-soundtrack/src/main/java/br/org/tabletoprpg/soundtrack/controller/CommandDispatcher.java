@@ -3,11 +3,6 @@ package br.org.tabletoprpg.soundtrack.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import br.org.tabletoprpg.soundtrack.controller.command.GetCurrentThemeHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImageHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.GetThemeImagesHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.ListOstsHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.ListThemesHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.NextAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.NextSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PauseAmbienceHandler;
@@ -20,9 +15,15 @@ import br.org.tabletoprpg.soundtrack.controller.command.PreviousAmbienceHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.PreviousSongHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetOstHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.SetThemeHandler;
-import br.org.tabletoprpg.soundtrack.controller.command.StatusHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.UnsetOstHandler;
 import br.org.tabletoprpg.soundtrack.controller.command.UnsetThemeHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetCurrentThemeHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetThemeImageHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.GetThemeImagesHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.ListOstsHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.ListThemesHandler;
+import br.org.tabletoprpg.soundtrack.controller.query.StatusHandler;
+import br.org.tabletoprpg.soundtrack.controller.result.Result;
 import br.org.tabletoprpg.soundtrack.service.session.SessionService;
 
 public class CommandDispatcher {
@@ -67,7 +68,7 @@ public class CommandDispatcher {
         return h;
     }
 
-    public String dispatch(Command command) {
+    public Result dispatch(Command command) {
 
         CommandHandler handler = handlers.get(command.getAction());
 
