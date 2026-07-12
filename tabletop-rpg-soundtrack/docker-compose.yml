@@ -1,0 +1,33 @@
+services:
+  tabletopost:
+    build: .
+    image: tabletopost:latest
+    container_name: tabletopost
+
+   
+
+    environment:
+
+      - DISPLAY=${DISPLAY}
+
+      - SDL_AUDIODRIVER=pulse
+      - PULSE_SERVER=unix:/tmp/pulse-socket
+      - PULSE_COOKIE=/tmp/pulse-cookie
+
+    volumes:
+
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+
+      - ${XDG_RUNTIME_DIR:-/run/user/1000}/pulse/native:/tmp/pulse-socket
+      - ${HOME}/.config/pulse/cookie:/tmp/pulse-cookie:ro
+
+
+      - ./local_storage:/app/local_storage
+      - ./cache:/app/cache
+
+
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+
+    ipc: host
+    network_mode: host
