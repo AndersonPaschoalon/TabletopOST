@@ -2,7 +2,6 @@ package br.org.tabletoprpg.soundtrack.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.util.Collection;
 
 import javax.swing.Box;

@@ -45,7 +45,7 @@ public class ConsoleView {
                 Result result = dispatcher.dispatch(command);
 
                 if (result != null && !result.asText().isBlank()) {
-                    prompt.println(result.asText());
+                    ConsolePrompt.println(result.asText());
                 }
             } catch (Exception ex) {
                 prompt.printError(ex.getMessage());

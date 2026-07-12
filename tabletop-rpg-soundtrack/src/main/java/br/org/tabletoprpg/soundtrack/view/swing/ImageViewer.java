@@ -2,10 +2,14 @@ package br.org.tabletoprpg.soundtrack.view.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -124,12 +128,23 @@ public class ImageViewer extends JPanel {
 
         try {
 
-            ImageIcon icon = new ImageIcon(path);
+            // ImageIO.read é síncrono (bloqueia até decodificar totalmente
+            // o arquivo), diferente de new ImageIcon(Image) +
+            // getScaledInstance(...), que carrega/escala de forma
+            // assíncrona e pode deixar o label em branco na primeira
+            // exibição.
+            BufferedImage original = ImageIO.read(new File(path));
+
+            if (original == null) {
+                imageLabel.setIcon(null);
+                imageLabel.setText("(formato de imagem não suportado: " + path + ")");
+                return;
+            }
 
             int targetWidth = Math.max(getWidth(), 400);
             int targetHeight = Math.max(getHeight(), 250);
 
-            Image scaled = icon.getImage().getScaledInstance(
+            Image scaled = original.getScaledInstance(
                     targetWidth,
                     targetHeight,
                     Image.SCALE_SMOOTH);
@@ -137,10 +152,10 @@ public class ImageViewer extends JPanel {
             imageLabel.setText("");
             imageLabel.setIcon(new ImageIcon(scaled));
 
-        } catch (Exception ex) {
+        } catch (IOException ex) {
 
             imageLabel.setIcon(null);
-            imageLabel.setText("(falha ao carregar imagem: " + path + ")");
+            imageLabel.setText("(falha ao carregar imagem: " + path + " — " + ex.getMessage() + ")");
         }
     }
 

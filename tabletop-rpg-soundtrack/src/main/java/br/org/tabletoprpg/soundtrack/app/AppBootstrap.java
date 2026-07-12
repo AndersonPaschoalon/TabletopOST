@@ -22,9 +22,9 @@ public final class AppBootstrap {
          * Um AudioPlayer para cada canal.
          */
 
-        AudioPlayer musicPlayer = AudioPlayerFactory.create(true);
+        AudioPlayer musicPlayer = AudioPlayerFactory.create(false);
 
-        AudioPlayer ambiencePlayer = AudioPlayerFactory.create(true);
+        AudioPlayer ambiencePlayer = AudioPlayerFactory.create(false);
 
         /*
          * Cada PlaybackService controla um canal independente.
