@@ -44,16 +44,7 @@ selecionado) não foi cumprido.
 - [ ] linha vazia / só espaços → não deve fazer nada nem quebrar, apenas reexibir o prompt
 - [ ] comando com hífen (`get-theme-image 0`) → deve ser normalizado e funcionar igual a `get_theme_image 0`
 
-## 5. Concorrência (logs de background vs. digitação)
-
-- [ ] `play_both` e, **enquanto o `DummyAudioPlayer` está logando**
-      `[DummyAudioPlayer] Playing: ...`, digitar `PAUSE_BOTH` bem devagar,
-      letra por letra
-- [ ] Confirmar que o log aparece **acima** da linha do prompt, sem
-      embaralhar o texto sendo digitado (sem repetir o bug
-      `PAUSE_BO[DummyAudioPlayer] Playing... TH`)
-
-## 6. Teste de cache/local_storage (camada adjacente, mas afeta a CLI)
+## 5. Teste de cache/local_storage (camada adjacente, mas afeta a CLI)
 
 - [ ] Apagar `cache/<ost>` e rodar `set_ost <ost>` de novo → deve
       reconstruir o cache automaticamente
