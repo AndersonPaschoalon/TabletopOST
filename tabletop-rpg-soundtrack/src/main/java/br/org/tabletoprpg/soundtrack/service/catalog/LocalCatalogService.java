@@ -51,8 +51,10 @@ public class LocalCatalogService implements CatalogService {
         // Copia todos os arquivos da pasta localStoragePath/ostName para o cache local
         // e retorna o caminho do cache local.
 
-        Path sourcePath = Paths.get(localStoragePath, ostName);
-        Path targetPath = Paths.get(cachePath, ostName);
+        String resolvedName = resolveOstFolderName(ostName);
+
+        Path sourcePath = Paths.get(localStoragePath, resolvedName);
+        Path targetPath = Paths.get(cachePath, resolvedName);
 
         if (!Files.exists(sourcePath)) {
             throw new OstNotFoundError("A OST" + ostName + " não foi encontrada");
@@ -84,10 +86,29 @@ public class LocalCatalogService implements CatalogService {
             throw new TabletopExeption("erro ao realizar o cache local da OST");
         }
 
-        System.out.println("Downloading OST: " + ostName);
+        System.out.println("Downloading OST: " + resolvedName);
         return targetPath.toString();
         
 
+    }
+
+    private String resolveOstFolderName(String ostName) {
+        if (ostName == null) {
+            return null;
+        }
+
+        Path rootPath = getLocalPath();
+
+        try (Stream<Path> paths = Files.list(rootPath)) {
+            return paths
+                    .filter(Files::isDirectory)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> name.equalsIgnoreCase(ostName))
+                    .findFirst()
+                    .orElse(ostName);
+        } catch (IOException e) {
+            throw new TabletopExeption("Erro ao listar OSTs");
+        }
     }
 
     private Path getLocalPath() {

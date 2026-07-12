@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class LinuxAudioPlayer implements AudioPlayer {
 
-    private Process process;
+    private volatile Process process;
 
     @Override
     public void play(String file) {
@@ -14,10 +14,15 @@ public class LinuxAudioPlayer implements AudioPlayer {
         try {
 
             ProcessBuilder builder = new ProcessBuilder(
+                    "setsid",
                     "ffplay",
                     "-nodisp",
                     "-autoexit",
+                    "-loglevel", "quiet",
                     file);
+
+            builder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            builder.redirectError(ProcessBuilder.Redirect.DISCARD);
 
             this.process = builder.start();
 
@@ -32,12 +37,12 @@ public class LinuxAudioPlayer implements AudioPlayer {
                     e);
 
         } catch (InterruptedException e) {
+            if (this.process != null) {
+                this.process.destroy();
+                this.process = null;
+            }
 
             Thread.currentThread().interrupt();
-
-            throw new RuntimeException(
-                    "Audio playback interrupted.",
-                    e);
         }
     }
 

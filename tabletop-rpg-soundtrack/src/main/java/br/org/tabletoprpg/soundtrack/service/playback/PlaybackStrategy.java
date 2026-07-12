@@ -6,4 +6,8 @@ public interface PlaybackStrategy {
 
     String nextTrack(List<String> playlist);
 
+    default String previousTrack(List<String> playlist) {
+        return nextTrack(playlist);
+    }
+
 }
